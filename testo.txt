@@ -1,0 +1,11 @@
+Realizzare il gioco della battaglia navale in uno scacchiera di 10 righe (numeri) per 10 colonne (lettere)
+Giocatori:
+Server (nemico)
+Client (umano)
+Prima dell'inizio del gioco l'umano invia immagine dello schema criptato con Fernet, a fine partita invia la chiave privata.
+Il Server salva i colpi e la posizione delle sue navi su un DB.
+La posizione viene definita  e salvata con un apposito  script e caricata dal DB da parte dello script server.
+Colpi(NUMERO_COLPO, RIGA, COLONNA,ESITO, NUMERO_PARTITA)
+Posizione(...)
+Affondata l'ammiraglia la partita termina.
+Giocatore(...)
