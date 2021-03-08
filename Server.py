@@ -23,12 +23,14 @@ class Server(Thread):
                 socket_client_1, indirizzo = self.server_socket.accept()
                     
                 socket_client_1.send(b'aspetta')
-                    
+                
                 socket_client_2, indirizzo = self.server_socket.accept()
-                    
+                
                 socket_client_1.send(b'connesso')
-                    
-                ClientHandler(client_socket_1 = socket_client_1, client_socket_2 = socket_client_2, server_socket = self.server_socket).start()
+
+                socket_client_2.send(b'connesso')
+                
+                ClientHandler(client_socket_1 = socket_client_1, client_socket_2 = socket_client_2).start()
                 
         except KeyboardInterrupt:
             
@@ -36,5 +38,15 @@ class Server(Thread):
          
 if __name__ == '__main__':
     
-    Server().start()
+    try:
+
+        a = Server()
+
+        a.start()
+
+    except Exception:
+
+        print('restart')
+
+        Server().start()
         

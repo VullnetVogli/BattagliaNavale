@@ -1,14 +1,12 @@
 from socket import AF_INET, SOCK_STREAM, socket
 from threading import Thread
-from time import sleep
+from random import randint
 
 class ClientHandler(Thread):
     
-    def __init__(self, server_socket: socket, client_socket_1: socket, client_socket_2: socket):
+    def __init__(self, client_socketclient_socket_1: socket, client_socket_2: socket):
         
         super().__init__()
-        
-        self.server_socket = server_socket
         
         self.client_socket_1 = client_socket_1
         
@@ -16,31 +14,45 @@ class ClientHandler(Thread):
         
     def run(self):
         
-        print('runno')
+        # Decidiamo i turni in maniera random
+        self.turni()
+
+        dati1 = self.client_socket_1.recv(1024)
         
-        dati1 = 'dsa'
-        
-        dati2 = 'dsa'
-        
+        dati2 = self.client_socket_2.recv(1024)
+
+        self.client_socket_1.send(dati2)
+
+        self.client_socket_2.send(dati1)
+
+        dati1 = None
+
+        dati2 = None
+
+        # Decidiamo i turni
+
         while dati1 != b'' and dati2 != b'':
             
             dati1 = self.client_socket_1.recv(1024)
             
+            self.client_socket_2.send(dati1)
+
             dati2 = self.client_socket_2.recv(1024)
-            
-            print(dati1, dati2)
-            
-            self.client_socket_1.send(dati1)
-            
-            self.client_socket_2.send(dati2)
-            
-            sleep(1)
+
+            self.client_socket_1.send(dati2)
         
         print('fin')
         
-        self.client_socket_1.close()
-        
-        self.client_socket_2.shutdown(1)
-        
-        
-        
+    def turni(self):
+
+        if randint(0, 1):
+
+            self.client_socket_1.send(b'1')
+
+            self.client_socket_2.send(b'0')
+
+        else:
+
+            self.client_socket_1.send(b'0')
+
+            self.client_socket_2.send(b'1')
