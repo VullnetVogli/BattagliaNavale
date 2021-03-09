@@ -1,7 +1,6 @@
 from socket import AF_INET, SOCK_STREAM, socket
 from threading import Thread
 from time import sleep
-from Read import Read
 from Board import Board
 import pickle
 import numpy
@@ -20,19 +19,13 @@ class Client(Thread):
 
     def run(self):
         
-        print('Aspettando un giocatore...')
-        
-        if self.client_socket.recv(1024) == b'connesso':
-            
-            print('Un giocatore si è connesso!')
-        
+        while self.client_socket.recv(1024) == b'aspetta':
+
+            print('Aspettando un giocatore...')
+
         else:
 
-            messaggio = b'aspetta'
-
-            while messaggio == b'aspetta':
-
-                messaggio = self.client_socket.recv(1024)
+            print('Un giocatore si è connesso!')
 
         print('La partita sta per iniziare...')
 
@@ -44,7 +37,7 @@ class Client(Thread):
         self.board.set_board_nemico(board = (pickle.loads(self.client_socket.recv(1024), encoding = 'UTF-8')).tolist())
 
         print('Parti per primo!') if turno else print('Parti per secondo!')
-
+        
         nuova_mossa = ''
         
         while nuova_mossa != 'fine': 
@@ -62,7 +55,7 @@ class Client(Thread):
                 self.client_socket.send(bytes(coordinate.encode('UTF-8')))
 
             else:
-
+                
                 self.board.attacca(posizione = self.client_socket.recv(1024).decode('UTF-8'))
 
             self.board.output()
@@ -74,7 +67,6 @@ class Client(Thread):
         self.client_socket.close()
 
         print('fine')
-
 
 if __name__ == '__main__':
     
