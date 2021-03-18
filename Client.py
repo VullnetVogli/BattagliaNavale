@@ -19,6 +19,8 @@ class Client(Thread):
 
     def run(self):
         
+        print('\n\n')
+
         # Aspettiamo l'altro giocatore che si connetta
         self.aspetta_giocatore()
 
@@ -35,6 +37,10 @@ class Client(Thread):
 
         print('Parti per primo!') if turno else print('Parti per secondo!')
         
+        sleep(3)
+
+        self.board.output()
+
         fine_gioco = False
         
         while not fine_gioco: 
@@ -49,7 +55,7 @@ class Client(Thread):
                     coordinate = input('> ').upper()
 
                 # Lo appuntiamo nella nostra board
-                self.board.segna(posizione = coordinate)
+                self.board.segna_coordiante_aversario(posizione = coordinate)
 
                 # Se abbiamo fatto fuori tutte le navi del nemico, abbiamo vinto.
                 if len(self.board.navi_nemico) == 0:
@@ -69,8 +75,8 @@ class Client(Thread):
                 coordinate = self.client_socket.recv(1024).decode('UTF-8')
                 
                 if coordinate[0] == '1':
-                    
-                    self.board.attacca(posizione = coordinate[1::])
+
+                    self.board.segna_mie_coordinate(posizione = coordinate[1::])
 
                     self.board.output()
 
@@ -81,7 +87,7 @@ class Client(Thread):
                 # Se invece non ha vinto ci segniamo le coordinate sulla board
                 else:
 
-                    self.board.attacca(posizione = coordinate)
+                    self.board.segna_mie_coordinate(posizione = coordinate)
 
                     self.board.output()
 

@@ -10,7 +10,7 @@ class Board():
         #'Corazzata': numpy.matrix(['▄', '▄', '▄', '▄']),
         #'Crociere': numpy.matrix(['▄', '▄', '▄']),
         'Sottomarino': numpy.matrix(['▄', '▄']),
-        'Nave da assalto': numpy.matrix(['▄'])
+        #'Nave da assalto': numpy.matrix(['▄'])
     }
 
     # O: non preso, X: preso
@@ -38,6 +38,8 @@ class Board():
     def inizializza_board(self):
             
         for nome_nave in self.pezzi.keys():
+
+            self.output()
 
             dim_pezzo = self.pezzi[nome_nave].shape[1]
 
@@ -69,8 +71,6 @@ class Board():
                     for i in range(0, dim_pezzo):
 
                         self.board[x + i][y] = pezzo[i, 0]
-            
-            self.output()
 
     def inserisci_coordinate(self):
 
