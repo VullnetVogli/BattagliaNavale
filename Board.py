@@ -1,16 +1,16 @@
 from os import system
 import numpy
-
+from time import sleep
 class Board():
 
     BOARD_DIM = 10
 
     pezzi = {
-        'Portaerei': numpy.matrix(['▄', '▄', '▄', '▄', '▄']),
+        #'Portaerei': numpy.matrix(['▄', '▄', '▄', '▄', '▄']),
         #'Corazzata': numpy.matrix(['▄', '▄', '▄', '▄']),
         #'Crociere': numpy.matrix(['▄', '▄', '▄']),
-        #'Sottomarino': numpy.matrix(['▄', '▄']),
-        #'Nave da assalto': numpy.matrix(['▄'])
+        'Sottomarino': numpy.matrix(['▄', '▄']),
+        'Nave da assalto': numpy.matrix(['▄'])
     }
 
     # O: non preso, X: preso
@@ -56,8 +56,7 @@ class Board():
                 # Se la nave è verticale
                 if pezzo.shape[0] == 1:
                     
-                    self.posizioni.append((x, y, 0, dim_pezzo))
-                    #self.posizioni = numpy.concatenate([self.posizioni, numpy.matrix([[x, y, 0, dim_pezzo]])], axis = 0)
+                    self.posizioni.append((x, y, 0, dim_pezzo, 0))
                     
                     for i in range(0, dim_pezzo):
                     
@@ -65,8 +64,7 @@ class Board():
 
                 else:
 
-                    self.posizioni.append((x, y, dim_pezzo, 0)) 
-                    #self.posizioni = numpy.concatenate([self.posizioni, numpy.matrix([[x, y, dim_pezzo, 0]])], axis = 0)
+                    self.posizioni.append((x, y, dim_pezzo, 0, 0)) 
 
                     for i in range(0, dim_pezzo):
 
@@ -138,9 +136,9 @@ class Board():
     def coordinate_valide(self, coordinate: str):
         
         # Controlliamo che la lunghezzia sia almeno di due, che la prima sia una lettera, che il resto siano dei numeri e che non vadano fuori dalla matrice
-        return len(coordinate) > 1 and coordinate[0].isascii() and coordinate[1::].isdecimal() and ord(coordinate[0]) - 64 > 0 and ord(coordinate[0]) - 64 < self.BOARD_DIM and int(coordinate[1::]) > 0 and int(coordinate[1::]) < self.BOARD_DIM
+        return len(coordinate) > 1 and coordinate[0].isascii() and coordinate[1::].isdecimal() and ord(coordinate[0]) - 64 > 0 and ord(coordinate[0]) - 64 <= self.BOARD_DIM and int(coordinate[1::]) > 0 and int(coordinate[1::]) <= self.BOARD_DIM
 
-    def attacca(self, posizione: str):
+    def segna_mie_coordinate(self, posizione: str):
         
         x = ord(posizione[0]) - 64
 
@@ -168,39 +166,81 @@ class Board():
 
         self.output()
 
-    def segna(self, posizione: str):
+    def segna_coordiante_aversario(self, posizione: str):
         
         x = ord(posizione[0]) - 64
 
         y = int(posizione[1::])
         
-        # Controlla se il colpo è all'interno di posizioni
+        # Scorro le navi dell'avversario
         for nave_nemico in self.navi_nemico:
             
+            # Controlliamo se il colpo è all'interno delle coordinate x
             if nave_nemico[0] <= x <= nave_nemico[0] + nave_nemico[2]:
 
+                # Controlliamo se il colpo è all'interno delle coordinate y
                 if nave_nemico[1] <= y <= nave_nemico[1] + nave_nemico[3]:
 
+                    # Segniamo che il colpo è andato a segno
                     self.board_nemico[x][y] = 'X'
 
+                    # Constrolliamo se con quel colpo il giocatore abbia vinto
+                    self.controlla_vittoria(nave_nemico = nave_nemico)
+
                     break
-        
+                
+                # Altrimenti è andato a vuoto
                 else:
 
+                    # Segniamo che è andato a vuott
                     self.board_nemico[x][y] = 'O'
 
                     break
+
+            # Altrimenti è andato a vuoto
             else:
 
-                self.board[x][y] = 'O'
+                # Segniamo che è andato a vuott
+                self.board_nemico[x][y] = 'O'
 
                 break
 
         self.output()
 
+    def controlla_vittoria(self, nave_nemico):
+
+        # Se il pezzo è verticale
+        if nave_nemico[2] == 0:
+
+            # E la nave è stata colpita in tutta la sua lunghezza la consideriamo affondata
+            if nave_nemico[4] == nave_nemico[3] - 1:
+
+                self.navi_nemico.remove(nave_nemico)
+                
+                return True
+
+            # Altrimenti un'altra parte della nave è stata colpita
+            else:
+
+                nave_nemico[4] += 1
+
+        # Stessa cosa se il pezzo è in orizzontale
+        else:
+
+            if nave_nemico[4] == nave_nemico[2] - 1:
+
+                self.navi_nemico.remove(nave_nemico)
+
+                return True
+
+            else:
+
+                nave_nemico[4] += 1
+
+        return False
 
 if __name__ == '__main__':
 
     b = Board()
-    print(numpy.matrix(b.posizioni))
+    
     

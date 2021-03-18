@@ -36,13 +36,11 @@ class ClientHandler(Thread):
             dati1 = self.client_socket_1.recv(1024)
             
             self.client_socket_2.send(dati1)
-
+            
             dati2 = self.client_socket_2.recv(1024)
 
             self.client_socket_1.send(dati2)
-        
-        print('fin')
-        
+            
     def turni(self):
 
         self.client_socket_1.send(b'1')
